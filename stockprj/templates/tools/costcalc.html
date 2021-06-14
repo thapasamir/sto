@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% block main %}
+
+<div class="container">
+    <br>
+    <br>
+    <h1 style="text-align:center;">This is the cost calculator what do you wnat to do ?</h1>
+    <br>
+    <div class="d-grid gap-2 col-6 mx-auto">
+    <button class="btn btn-outline-success" type="button" onclick="buy()">Buy</button>
+    <button class="btn btn-outline-danger" type="button" onclick="sell()">Sell</button>
+    {# For to pop up when run buy function via button #}
+
+    {# Buy form  #}
+    <div class="buyform">
+        <div class="mb-3">
+          <label for="formGroupExampleInput" class="form-label" id="bp">Enter Buying Price/per share ?</label>
+          <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Example input placeholder">
+        </div>
+        <div class="mb-3">
+          <label for="formGroupExampleInput2" class="form-label">Enter Quantity ?</label>
+          <input type="text" class="form-control" id="formGroupExampleInput2" placeholder="Another input placeholder">
+        </div>
+    </div>
+    <button type="button" class="btn btn-primary" style="display:none;"id="calcbtn1" onclick="buy_calc()">Calculate</button>
+
+    {# Sell form #}
+    <div class="sellform" style="display:none;">
+        <div class="mb-3">
+          <label for="formGroupExampleInput" class="form-label" id="bp">Enter Buying  Price/per share ?</label>
+          <input type="text" class="form-control" id="buying_rate" placeholder="Buying price/per share">
+        </div>
+        <div class="mb-3">
+          <label for="formGroupExampleInput2" class="form-label">Enter Sellig Rate ?</label>
+          <input type="text" class="form-control" id="selling_rate" placeholder="Selling rate">
+          <label for="formGroupExampleInput2" class="form-label">Enter Quantity ?</label>
+          <input type="text" class="form-control" id="quantity" placeholder="Enter quantity here">
+        </div>
+    </div>
+    <button type="button" class="btn btn-primary" style="display:none;"id="calcbtn2" onclick="sell_calc()">Calculate</button>
+
+    {# BUy #}
+    <div class="reasult_buy" style="display:none;">
+      <ul class="list-group list-group-flush">
+        <br>
+        <li class="list-group-item" >Purchase volume :<span id="pv"></span> </li>
+        <br>
+        <li class="list-group-item" >Broker commision :<span id="bc"></span> </li>
+        <br>
+        <li class="list-group-item" >SEBO commission :<span id="sc"></span> </li>
+        <br>
+        <li class="list-group-item" >DP charge :<span id="dp"></span> </li>
+        <br>
+        <li class="list-group-item" >Price per unit Share :<span id="pps"></span> </li>
+        <br>
+        <li class="list-group-item" >Total Amount <span id="ta"></span> </li>
+            <button type="button" class="btn btn-danger" onclick="history.go(0)">Clear</button>
+      </ul>
+    </div>
+    {# Sell #}
+
+    <br>
+    <div class="reasult_sell" style="display:none;">
+      <ul class="list-group list-group-flush">
+        <br>
+        <li class="list-group-item" >Purchase cost:<span id="purchase_cost"></span> </li>
+        <br>
+        <li class="list-group-item" >Net Sales:<span id="net_sale"></span> </li>
+        <br>
+        <li class="list-group-item" >Broker Charge:<span id="broker_charge"></span> </li>
+        <br>
+        <li class="list-group-item" >SEBON COMMISION:<span id="s_comm"></span> </li>
+        <br>
+        <li class="list-group-item" >DP Charge:<span id="dp_charge"></span> </li>
+        <br>
+        <li class="list-group-item" >Capital Gain Tax:<span id="cgt"></span> </li>
+        <br>
+        <li class="list-group-item" id="profit_loss">Net Profit:<span id="n_profit"></span> </li>
+        <br>
+        <li class="list-group-item" >Total Recivable amount:<span id="tra"></span> </li>
+          <button type="button" class="btn btn-danger" onclick="history.go(0)">Clear</button>
+      </ul>
+    </div>
+</div>
+</div>
+<script type="text/javascript">
+  function sell() {
+  console.log("activated sell function ");
+  let sellElement= document.querySelector(".sellform");
+  sellElement.style.display = 'block';
+
+  let show_btn = document.querySelector("#calcbtn2")
+  show_btn.style.display = 'block';
+}
+
+function sell_calc(){
+
+  let show = document.querySelector(".reasult_sell")
+  show.style.display = 'block';
+  var buying_rate =  document.getElementById("buying_rate").value; //a
+  console.log(buying_rate);
+  var selling_rate =  document.getElementById("selling_rate").value; //b
+  console.log(selling_rate);
+  var quantity =  document.getElementById("quantity").value; //c
+  console.log(quantity);
+  console.log(buying_rate*selling_rate)
+
+  var net_buy = buying_rate*quantity; //d
+  var net_sell = parseInt(selling_rate)*parseInt(quantity); //e
+  var final = net_sell;
+
+  var k = 50000;
+  var l = 500000;
+  var m = 2000000;
+  var n = 10000000;
+  var o = 1000000000;
+
+  var broker_charge; //i
+
+  if (k >= net_buy){
+    broker_charge = quantity*0.004;
+  }else if (l >= net_buy){
+    broker_charge = quantity*0.0037; 
+  }else if(m >= net_buy){
+    broker_charge = quantity*0.0034;
+  }else if(n>net_buy){
+    broker_charge = net_buy*0.003;
+  }else if(o>net_buy){
+    broker_charge = net_buy*0.0027;
+  }
+
+  var sebon_charge = net_buy*0.00015; //f
+  var dp_charge = 25; //g
+  var total_buying_cost = parseInt(net_buy)+parseInt(sebon_charge)+parseInt(dp_charge)+parseInt(broker_charge) //h 
+
+  var profit = parseInt(net_sell)-parseInt(total_buying_cost) //m
+  var taxable =0.05 * profit //k
+  var net_profit = parseInt(net_sell)-parseInt(total_buying_cost)-parseInt(broker_charge)-parseInt(sebon_charge)-parseInt(taxable);//o
+
+  var rec_profit = parseInt(net_sell)-parseInt(broker_charge)-parseInt(sebon_charge)-parseInt(taxable);//p
+
+
+  var purchase_cost = document.getElementById("purchase_cost");
+  purchase_cost.innerText = total_buying_cost;
+
+  var net_salex = document.getElementById("net_sale");
+  net_salex.innerText = final;
+
+  var broker_chargex = document.getElementById("broker_charge");
+  broker_chargex.innerText = broker_charge;
+
+  var s_commx = document.getElementById("s_comm");
+  s_commx.innerText = sebon_charge;
+
+  var dp_chargex = document.getElementById("dp_charge");
+  dp_chargex.innerText = dp_charge;
+
+  var cgt = document.getElementById("cgt");
+  cgt.innerText = taxable;
+
+
+  var total_res_loss = parseInt(net_sell)-parseInt(broker_charge)-parseInt(sebon_charge)-parseInt(dp_charge); //q
+
+  var loss = parseInt(total_buying_cost)-parseInt(total_res_loss); //n
+
+  if (net_sell < total_buying_cost){
+  
+
+  var n_profit = document.getElementById("n_profit");
+  n_profit.innerText = loss;
+
+  var tra = document.getElementById("tra");
+  tra.innerText = total_res_loss;  
+
+    var p_into_loss = document.querySelector("#profit_loss")
+  p_into_loss.innerText = 'Loss';
+
+  }  
+
+  var n_profit = document.getElementById("n_profit");
+  n_profit.innerText = net_profit;
+
+  var tra = document.getElementById("tra");
+  tra.innerText = rec_profit;
+  
+
+
+
+    
+
+  
+
+}
+
+</script>
+
+{% endblock main %}
